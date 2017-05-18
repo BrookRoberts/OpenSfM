@@ -103,7 +103,7 @@ def timediff_from_exif(exif1, exif2):
 
 def match_candidates_from_metadata(images, exifs, data):
     '''
-    Compute candidate matching pairs based on GPS and capture time
+    Compute candidate matching pairs based on GPS, capture time and order of images
     '''
     max_distance = data.config['matching_gps_distance']
     max_neighbors = data.config['matching_gps_neighbors']
