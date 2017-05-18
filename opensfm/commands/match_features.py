@@ -104,6 +104,7 @@ def timediff_from_exif(exif1, exif2):
 def match_candidates_from_metadata(images, exifs, data):
     '''
     Compute candidate matching pairs based on GPS, capture time and order of images
+    Only computes pairs where the first image of the pair does not already have a matches file
     '''
     max_distance = data.config['matching_gps_distance']
     max_neighbors = data.config['matching_gps_neighbors']
@@ -118,6 +119,8 @@ def match_candidates_from_metadata(images, exifs, data):
     pairs = set()
     images.sort()
     for index1, im1 in enumerate(images):
+        if data.matches_exists(im1):
+            continue
         distances = []
         timediffs = []
         indexdiffs = []
@@ -140,7 +143,8 @@ def match_candidates_from_metadata(images, exifs, data):
             indexdiffs = indexdiffs[:max_order_neighbors]
 
         for d, im2 in distances + timediffs + indexdiffs:
-            if im1 < im2:
+            # If im2 already has a match file, we put it first in the pair regardless
+            if im1 < im2 or data.matches_exists(im2):
                 pairs.add((im1, im2))
             else:
                 pairs.add((im2, im1))
@@ -161,6 +165,9 @@ def match(args):
     Compute all matches for a single image
     '''
     im1, candidates, i, n, ctx = args
+    if ctx.data.matches_exists(im1):
+        assert(len(candidates) == 0)
+        return
     logger.info('Matching {}  -  {} / {}'.format(im1, i + 1, n))
 
     config = ctx.data.config
