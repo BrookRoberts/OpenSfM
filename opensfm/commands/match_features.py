@@ -186,7 +186,6 @@ def match_candidates_from_metadata(images, exifs, data):
     o = match_candidates_by_order(images, order_neighbors, data)
     pairs = d | t | o
 
-
     res = {im: [] for im in images}
     for im1, im2 in pairs:
         if not data.matches_exists(im1):
