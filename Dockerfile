@@ -1,4 +1,4 @@
-FROM paulinus/opensfm-docker-base:opencv3
+FROM brookroberts/opensfm-docker-base
 
 COPY . /source/OpenSfM
 
