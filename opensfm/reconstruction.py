@@ -870,7 +870,9 @@ def grow_reconstruction(data, graph, reconstruction, images, gcp):
                     data.config.get('triangulation_threshold', 0.004),
                     data.config.get('triangulation_min_ray_angle', 2.0))
 
-                if should_bundle.should(reconstruction):
+                if data.config.get('only_localise', False):
+                    bundle_single_view(graph, reconstruction, image, data.config)
+                elif should_bundle.should(reconstruction):
                     bundle(graph, reconstruction, None, data.config)
                     remove_outliers(graph, reconstruction, data.config)
                     align.align_reconstruction(reconstruction, gcp,

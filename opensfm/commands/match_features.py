@@ -186,12 +186,20 @@ def match_candidates_from_metadata(images, exifs, data):
     o = match_candidates_by_order(images, order_neighbors, data)
     pairs = d | t | o
 
+    calculated_images = set()
+    for index1, image in enumerate(images):
+        if data.matches_exists(image):
+            calculated_images.add(image)
+
     res = {im: [] for im in images}
     for im1, im2 in pairs:
-        if not data.matches_exists(im1):
+        if data.config.get('only_localise', False) and im1 not in calculated_images and im2 not in calculated_images:
+            # We only want to match with existing images, since we are just localising
+            continue
+        if im1 not in calculated_images:
             res[im1].append(im2)
         else:
-            assert not data.matches_exists(im2)
+            assert im2 not in calculated_images
             res[im2].append(im1)
     return res
 
