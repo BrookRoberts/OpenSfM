@@ -209,9 +209,6 @@ def match_candidates_from_metadata(images, exifs, data):
 
     res = {im: [] for im in images}
     for im1, im2 in pairs:
-        if data.config.get('only_localise', False) and im1 not in calculated_images and im2 not in calculated_images:
-            # We only want to match with existing images, since we are just localising
-            continue
         if im1 not in calculated_images:
             res[im1].append(im2)
         else:
