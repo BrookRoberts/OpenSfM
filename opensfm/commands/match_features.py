@@ -98,17 +98,33 @@ def match_candidates_by_distance(images, exifs, reference, max_neighbors, max_di
             gps['latitude'], gps['longitude'], gps['altitude'],
             reference['latitude'], reference['longitude'], reference['altitude'])
 
-    tree = spatial.cKDTree(points)
 
-    pairs = set()
-    for i, image in enumerate(images):
-        if data.matches_exists(image):
-            continue
-        distances, neighbors = tree.query(
-            points[i], k=k, distance_upper_bound=max_distance)
-        for j in neighbors:
-            if i != j and j < len(images):
-                pairs.add(tuple(sorted((images[i], images[j]))))
+    if data.config.get('only_localise', False):
+        new_images_indices = [i for i, image in enumerate(images) if not data.matches_exists(image)]
+        old_images_indices = [i for i, image in enumerate(images) if data.matches_exists(image)]
+        old_images_tree = spatial.cKDTree([points[i] for i in old_images_indices])
+
+        pairs = set()
+
+        for i in new_images_indices:
+            distances, neighbors = old_images_tree.query(
+                points[i], k=k, distance_upper_bound=max_distance)
+            for j in neighbors:
+                if i != j and j < len(images):
+                    pairs.add(tuple(sorted((images[i], images[j]))))
+
+    else:
+        tree = spatial.cKDTree(points)
+
+        pairs = set()
+        for i, image in enumerate(images):
+            if data.matches_exists(image):
+                continue
+            distances, neighbors = tree.query(
+                points[i], k=k, distance_upper_bound=max_distance)
+            for j in neighbors:
+                if i != j and j < len(images):
+                    pairs.add(tuple(sorted((images[i], images[j]))))
     return pairs
 
 
