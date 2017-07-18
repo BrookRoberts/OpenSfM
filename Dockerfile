@@ -1,4 +1,4 @@
-FROM brookroberts/opensfm-docker-base
+FROM opensfm-docker-base
 
 COPY . /source/OpenSfM
 
