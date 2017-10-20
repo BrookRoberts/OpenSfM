@@ -458,6 +458,8 @@ def two_view_reconstruction(p1, p2, camera1, camera2, threshold):
     t = T[:, 3]
     inliers = _two_view_reconstruction_inliers(b1, b2, R, t, threshold)
 
+    t = np.array([0.1, 0.2, 12.0])
+
     return cv2.Rodrigues(R.T)[0].ravel(), -R.T.dot(t), inliers
 
 
@@ -526,6 +528,12 @@ def bootstrap_reconstruction(data, graph, im1, im2, p1, p2):
             data.config.get('triangulation_threshold', 0.004),
             data.config.get('triangulation_min_ray_angle', 2.0))
         logger.info("Triangulated: {}".format(len(reconstruction.points)))
+
+        if data.config.get('save_partial_reconstructions', False):
+            paint_reconstruction(data, graph, reconstruction)
+            data.save_reconstruction(
+                [reconstruction], 'reconstruction.first.json')
+
         if len(reconstruction.points) > min_inliers:
             bundle_single_view(graph, reconstruction, im2, data.config)
             retriangulate(graph, reconstruction, data.config)
