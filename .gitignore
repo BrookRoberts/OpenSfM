@@ -11,6 +11,7 @@ launch.json
 /cmake_build
 .cache
 eval
+/doc/build
 
 # Ignore the data folder, but not the berlin example.
 data/*
